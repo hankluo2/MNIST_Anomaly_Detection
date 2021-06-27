@@ -41,16 +41,21 @@ Run `python train.py`, predictions would be saved under `./result` directory.
 
 ### Details
 - model.py
-CNN network built here.
+
+    CNN network built here.
 
 - plot.py
-Prediction visulizations.
+
+    Prediction visulizations.
 
 - method.py
-Three different training method applied.
+
+    Three different training method applied.
 
 - train.py
-Data loading and main train stages.
+
+    Data loading and main train stages.
 
 - vis.py
-About MNIST: anomaly data distribution visualizations.
+
+    About MNIST: anomaly data distribution visualizations.
