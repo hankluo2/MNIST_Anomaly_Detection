@@ -30,32 +30,34 @@ classification.ipynb
 - NVIDIA GTX 1060, CUDA 11.1
 
 #### Requirements
-- Tensorflow 2.x
+- **Tensorflow 2.x**
+
     Run `conda install tensorflow-gpu`
 
-- Other requirements
+- **Other requirements**
+
     Run `pip install -r requirements`
     
 #### Get started
 Run `python train.py`, predictions would be saved under `./result` directory.
 
 ### Details
-- model.py
+- **model.py**
 
     CNN network built here.
 
-- plot.py
+- **plot.py**
 
     Prediction visulizations.
 
-- method.py
+- **method.py**
 
     Three different training method applied.
 
-- train.py
+- **train.py**
 
     Data loading and main train stages.
 
-- vis.py
+- **vis.py**
 
     About MNIST: anomaly data distribution visualizations.
