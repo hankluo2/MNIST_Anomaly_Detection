@@ -36,7 +36,7 @@ classification.ipynb
 
 - **Other requirements**
 
-    Run `pip install -r requirements`
+    Run `pip install -r requirements.txt`
     
 #### Get started
 Run `python train.py`, predictions would be saved under `./result` directory.
