@@ -1,5 +1,6 @@
 import tensorflow as tf
 from tensorflow import keras
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 import os
 import tempfile
@@ -44,6 +45,75 @@ def oversample_data(x_train, y_train, bool_train_labels):
 
     resampled_features = np.concatenate([res_pos_features, neg_features], axis=0)
     resampled_labels = np.concatenate([res_pos_labels, neg_labels], axis=0)
+
+    order = np.arange(len(resampled_labels))
+    np.random.shuffle(order)
+
+    resampled_features = resampled_features[order]
+    resampled_labels = resampled_labels[order]
+    print("Resampled dataset shapes: {}, {}".format(resampled_features.shape, resampled_labels.shape))
+    return resampled_features, resampled_labels
+
+
+def oversample_data2(x_train, y_train, bool_train_labels):
+    # General image augmentation
+    datagen = ImageDataGenerator(
+        featurewise_center=False,  # 在数据集上将输入平均值设置为0
+        samplewise_center=False,  # 将每个样本的平均值设置为0
+        featurewise_std_normalization=False,  # 将输入除以数据集的std
+        samplewise_std_normalization=False,  # 将每个输入除以它的std
+        zca_whitening=False,  # 使用ZCA白化
+        rotation_range=10,  # 在范围内随机旋转图像（0到180度）
+        zoom_range=0.1,  # 随机缩放图像
+        width_shift_range=0.1,  # 水平随机移动图像（总宽度的一部分）
+        height_shift_range=0.1,  # 垂直随机移动图像（总高度的一部分）
+        horizontal_flip=False,  # 随机翻转图像
+        vertical_flip=False)  # 随机翻转图像
+
+    # Select anomalous values
+    ax_train = x_train[~bool_train_labels]
+    ay_train = y_train[~bool_train_labels]
+    # print(ax_train.shape, ay_train.shape)
+
+    iterator = datagen.flow(ax_train, ay_train, batch_size=32)
+
+    cnt = 0
+    res_ax_train = []
+    res_ay_train = []
+
+    while cnt * 32 <= len(ax_train):
+        batched_images = next(iterator)  # generate infinitively
+        # print(batched_images[0].shape, batched_images[1].shape)
+        for i in range(32):
+            try:
+                img = batched_images[0][i]
+                label = batched_images[1][i]
+                res_ax_train.append(img)
+                res_ay_train.append(label)
+            except:
+                pass
+
+        cnt += 1
+    # print(cnt * 32)
+
+    res_ax_train = np.array(res_ax_train, dtype=np.uint8)
+    res_ay_train = np.array(res_ay_train, dtype=np.uint8)
+
+    anomaly_features = np.concatenate([ax_train, res_ax_train], axis=0)  # add augmentation images
+    anomaly_labels = np.concatenate([ay_train, res_ay_train], axis=0)
+    # print(anomaly_features.shape, anomaly_labels.shape)
+
+    pos_features = x_train[bool_train_labels]  # non-anomalies
+    pos_labels = y_train[bool_train_labels]  # anomalies
+
+    ids = np.arange(len(pos_features))
+    choices = np.random.choice(ids, len(anomaly_features))
+
+    res_pos_features = pos_features[choices]
+    res_pos_labels = pos_labels[choices]
+
+    resampled_features = np.concatenate([res_pos_features, anomaly_features], axis=0)
+    resampled_labels = np.concatenate([res_pos_labels, anomaly_labels], axis=0)
 
     order = np.arange(len(resampled_labels))
     np.random.shuffle(order)

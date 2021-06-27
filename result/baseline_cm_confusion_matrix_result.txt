@@ -1,5 +1,5 @@
-Legitimate Transactions Detected (True Negatives): 8856
-Legitimate Transactions Incorrectly Detected (False Positives): 9
-Fraudulent Transactions Missed (False Negatives): 16
-Fraudulent Transactions Detected (True Positives): 1119
+Legitimate Transactions Detected (True Negatives): 8848
+Legitimate Transactions Incorrectly Detected (False Positives): 17
+Fraudulent Transactions Missed (False Negatives): 10
+Fraudulent Transactions Detected (True Positives): 1125
 Total Fraudulent Transactions: 1135
