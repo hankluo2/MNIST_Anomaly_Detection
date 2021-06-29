@@ -5,6 +5,7 @@ import os
 import time
 import tempfile
 from pathlib import Path
+import argparse
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -45,19 +46,33 @@ bool_train_labels = y_train == 0
 neg, pos = np.bincount(y_train)
 total = neg + pos
 
+
+def parse_opt():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--method', type=str, default='class_weights', help='Train method of MNIST anomaly detection')
+    return parser.parse_args()
+
+
 if __name__ == '__main__':
-    # Baseline
-    baseline(train_images, y_train, test_images, y_test, epochs=30)  # Train #1
+    opt = parse_opt()
+    if opt.method is None:
+        raise 'Not method selected. Choose one of baseline/class_weights/oversampling attached to --method arg.'
 
-    # Oversampling Method
-    resampled_features, resampled_labels = oversample_data2(x_train=train_images,
-                                                            y_train=y_train,
-                                                            bool_train_labels=bool_train_labels)  # oversampling
-    res_train_images = tf.reshape(
-        resampled_features,
-        (resampled_features.shape[0], resampled_features.shape[1], resampled_features.shape[2], 1))  # tensor reshaping
+    if opt.method == 'baseline':
+        # Baseline
+        baseline(train_images, y_train, test_images, y_test, epochs=30)  # Train #1
 
-    oversampling(res_train_images, resampled_labels, test_images, y_test, epochs=30)  # Train #2
+    if opt.method == 'oversampling':
+        # Oversampling Method
+        resampled_features, resampled_labels = oversample_data2(x_train=train_images,
+                                                                y_train=y_train,
+                                                                bool_train_labels=bool_train_labels)  # oversampling
+        res_train_images = tf.reshape(
+            resampled_features,
+            (resampled_features.shape[0], resampled_features.shape[1], resampled_features.shape[2], 1))  # tensor reshaping
+
+        oversampling(res_train_images, resampled_labels, test_images, y_test, epochs=30)  # Train #2
 
     # Weighted class Method
-    class_weights(pos, neg, total, train_images, y_train, test_images, y_test, epochs=30)  # Train #3
+    if opt.method == 'class_weights':
+        class_weights(pos, neg, total, train_images, y_train, test_images, y_test, epochs=30)  # Train #3
